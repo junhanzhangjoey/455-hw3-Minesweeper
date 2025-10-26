@@ -3,7 +3,8 @@
 // CS 455 PA3
 // Spring 2025
 
-
+import java.util.Arrays;
+import java.util.Random;
 /** 
    MineField
       Class with locations of mines for a minesweeper game.
@@ -14,8 +15,8 @@
 public class MineField {
    
    // <put instance variables here>
-   
-   
+   private boolean[][] table;
+   private int numMines;
    
    /**
       Create a minefield with same dimensions as the given array, and populate it with the mines in
@@ -26,7 +27,16 @@ public class MineField {
                        and must be rectangular (i.e., every row is the same length)
     */
    public MineField(boolean[][] mineData) {
-      
+      this.numMines = 0;
+      this.table = new boolean[mineData.length][];
+      for(int i = 0; i < mineData.length; i++){
+         this.table[i] = Arrays.copyOf(mineData[i],mineData[i].length);
+         for(int j = 0; j < mineData[i].length; j++){
+            if(this.table[i][j]){
+               this.numMines++;
+            }
+         }
+      }
    }
    
    
@@ -40,7 +50,8 @@ public class MineField {
       PRE: numRows > 0 and numCols > 0 and 0 <= numMines < (1/3 of total number of field locations). 
     */
    public MineField(int numRows, int numCols, int numMines) {
-      
+      this.table = new boolean[numRows][numCols];
+      this.numMines = numMines;
    }
    
 
@@ -52,7 +63,22 @@ public class MineField {
       PRE: inRange(row, col) and numMines() < (1/3 * numRows() * numCols())
     */
    public void populateMineField(int row, int col) {
-      
+      resetEmpty();
+      int minesCount = 0;
+      int rowBound = this.table.length;
+      int colBound = this.table[0].length;
+      Random generator = new Random();
+      while(minesCount < this.numMines()){
+         int nextRowIdx = generator.nextInt(rowBound);
+         int nextColIdx = generator.nextInt(colBound);
+         if(nextRowIdx == row && nextColIdx == col){
+            continue;
+         }
+         if(!this.table[nextRowIdx][nextColIdx]){
+            this.table[nextRowIdx][nextColIdx] = true;
+            minesCount ++;
+         }
+      }
    }
    
    
@@ -64,7 +90,11 @@ public class MineField {
       beginning of a game.
     */
    public void resetEmpty() {
-      
+      for(int i = 0; i < numRows(); i++){
+         for(int j = 0; j < numCols(); j++){
+            this.table[i][j] = false;
+         }
+      }
    }
 
    
@@ -78,7 +108,18 @@ public class MineField {
      PRE: inRange(row, col)
    */
    public int numAdjacentMines(int row, int col) {
-      return 0;       // DUMMY CODE so skeleton compiles
+      int adjacentMinesCount = 0;
+      for(int dr = -1; dr <= 1; dr++){
+         for(int dc = -1; dc <= 1; dc++){
+            if(dr == 0 && dc == 0){
+               continue;
+            }
+            if(inRange(row + dr, col + dc) && this.table[row + dr][col + dc]){
+               adjacentMinesCount ++;
+            }
+         }
+      }
+      return adjacentMinesCount;
    }
    
    
@@ -90,7 +131,7 @@ public class MineField {
       @return whether (row, col) is a valid field location
    */
    public boolean inRange(int row, int col) {
-      return false;       // DUMMY CODE so skeleton compiles
+      return row >= 0 && row < numRows() && col >= 0 && col < numCols();
    }
    
    
@@ -99,7 +140,7 @@ public class MineField {
       @return number of rows in the field
    */  
    public int numRows() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return table.length;
    }
    
    
@@ -108,7 +149,7 @@ public class MineField {
       @return number of columns in the field
    */    
    public int numCols() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return table[0].length;
    }
    
    
@@ -120,9 +161,9 @@ public class MineField {
       PRE: inRange(row, col)   
    */    
    public boolean hasMine(int row, int col) {
-      return false;       // DUMMY CODE so skeleton compiles
+      return table[row][col];
    }
-   
+
    
    /**
       Returns the number of mines you can have in this minefield.  For mines created with the 3-arg
@@ -132,12 +173,10 @@ public class MineField {
       @return number of mines
     */
    public int numMines() {
-      return 0;       // DUMMY CODE so skeleton compiles
+      return numMines;       // DUMMY CODE so skeleton compiles
    }
 
    
    // <put private methods here>
-   
-         
 }
 
