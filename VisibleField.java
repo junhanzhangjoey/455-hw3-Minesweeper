@@ -129,6 +129,8 @@ public class VisibleField {
          }else if(fieldValue == MINE_GUESS){
             this.visibleField[row][col] = QUESTION;
             this.numGuesses--;
+         }else{
+            this.visibleField[row][col] = COVERED;
          }
       }
    }
