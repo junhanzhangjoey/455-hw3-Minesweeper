@@ -121,6 +121,9 @@ public class VisibleField {
       PRE: getMineField().inRange(row, col)
     */
    public void cycleGuess(int row, int col) {
+      if (this.isGameOver()) { 
+         return; 
+      }
       int fieldValue = this.visibleField[row][col];
       if(fieldValue < 0){
          if(fieldValue == COVERED){
