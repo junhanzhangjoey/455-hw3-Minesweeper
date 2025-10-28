@@ -84,8 +84,6 @@ public class VisibleField {
    public MineField getMineField() {
       return this.mineField;
    }
-   
-   
    /**
       Returns the visible status of the square indicated.
       @param row  row of the square
@@ -125,14 +123,14 @@ public class VisibleField {
          return; 
       }
       int fieldValue = this.visibleField[row][col];
-      if(fieldValue < 0){
+      if(fieldValue == COVERED || fieldValue == MINE_GUESS || fieldValue == QUESTION){
          if(fieldValue == COVERED){
             this.visibleField[row][col] = MINE_GUESS;
             this.numGuesses++;
          }else if(fieldValue == MINE_GUESS){
             this.visibleField[row][col] = QUESTION;
             this.numGuesses--;
-         }else{
+         }else if (fieldValue == QUESTION){
             this.visibleField[row][col] = COVERED;
          }
       }
@@ -173,7 +171,7 @@ public class VisibleField {
    public boolean isGameOver() {
       return this.gameOver;
    }
- 
+   
    
    /**
       Returns whether this square has been uncovered.  (i.e., is in any one of the uncovered states, 
