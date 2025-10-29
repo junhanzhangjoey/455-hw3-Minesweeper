@@ -246,6 +246,9 @@ public class VisibleField {
         if (!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS) {
             return;
         }
+        if (this.mineField.hasMine(r, c)) { 
+            return;
+        }
         this.numUncovered++;
         int numNeighbors = this.mineField.numAdjacentMines(r, c);
         this.visibleField[r][c] = numNeighbors;
