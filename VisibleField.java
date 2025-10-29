@@ -126,20 +126,18 @@ public class VisibleField {
       PRE: getMineField().inRange(row, col)
     */
    public void cycleGuess(int row, int col) {
-      if (this.isGameOver()) { 
+      if (this.isGameOver() || this.isUncovered(row, col)) { 
          return; 
       }
       int fieldValue = this.visibleField[row][col];
-      if(fieldValue == COVERED || fieldValue == MINE_GUESS || fieldValue == QUESTION){
-         if(fieldValue == COVERED){
-            this.visibleField[row][col] = MINE_GUESS;
-            this.numGuesses++;
-         }else if(fieldValue == MINE_GUESS){
-            this.visibleField[row][col] = QUESTION;
-            this.numGuesses--;
-         }else if (fieldValue == QUESTION){
-            this.visibleField[row][col] = COVERED;
-         }
+      if(fieldValue == COVERED){
+         this.visibleField[row][col] = MINE_GUESS;
+         this.numGuesses++;
+      }else if(fieldValue == MINE_GUESS){
+         this.visibleField[row][col] = QUESTION;
+         this.numGuesses--;
+      }else if (fieldValue == QUESTION){
+         this.visibleField[row][col] = COVERED;
       }
    }
 
@@ -220,7 +218,9 @@ public class VisibleField {
       if(numNeighbors == 0){
          for(int dr = -1; dr <= 1; dr++){
             for(int dc = -1; dc <= 1; dc++){
-               uncoverHelper(r + dr, c + dc);
+               if(!(dr == 0 && dc == 0)){
+                  uncoverHelper(r + dr, c + dc);
+               }
             }
          }
       }
