@@ -45,7 +45,10 @@ public class VisibleField {
    private int visibleField[][];
    private MineField mineField;
    private int numGuesses;
+   private int numUncovered;
    private boolean gameOver;
+   private boolean firstMove;
+
 
    /**
       Create a visible field that has the given underlying mineField.
@@ -60,7 +63,9 @@ public class VisibleField {
       }
       this.mineField = mineField;
       this.numGuesses = 0;
+      this.numUncovered = 0;
       this.gameOver = false;
+      this.firstMove = true;
    }
    
    
@@ -73,7 +78,9 @@ public class VisibleField {
          Arrays.fill(this.visibleField[i], COVERED);
       }
       this.numGuesses = 0;
+      this.numUncovered = 0;
       gameOver = false;
+      firstMove = true;
    }
   
    
@@ -152,17 +159,23 @@ public class VisibleField {
       PRE: getMineField().inRange(row, col)
     */
    public boolean uncover(int row, int col) {
-      if(this.mineField.hasMine(row, col)){
+      if(this.firstMove){
+         this.mineField.populateMineField(row, col);
+         this.firstMove = false;
+      }else if(this.mineField.hasMine(row, col)){
          this.gameOver = true;
          this.visibleField[row][col] = EXPLODED_MINE;
-         uncoverAll();
+         uncoverAllLose();
          return false;
       }
       uncoverHelper(row, col);
+      if(this.isWin()){
+         gameOver = true;
+         uncoverAllWin();
+      }
       return true;
    }
- 
-   
+
    /**
       Returns whether the game is over.
       (Note: This is not a mutator.)
@@ -201,6 +214,7 @@ public class VisibleField {
       if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
          return;
       }
+      this.numUncovered++;
       int numNeighbors = this.mineField.numAdjacentMines(r, c);
       this.visibleField[r][c] = numNeighbors;
       if(numNeighbors == 0){
@@ -221,7 +235,7 @@ public class VisibleField {
     * This method is called when the player either uncovers a mine (losing the game) or wins the game
     * by uncovering all non-mine squares.
     */
-   private void uncoverAll(){
+   private void uncoverAllLose(){
       for(int i = 0; i < this.mineField.numRows(); i++){
          for(int j = 0; j < this.mineField.numCols(); j++){
             int visibleValue = this.visibleField[i][j];
@@ -233,5 +247,19 @@ public class VisibleField {
             }
          }
       }
+   }
+
+   private void uncoverAllWin(){
+      for(int i = 0; i < this.mineField.numRows(); i++){
+         for(int j = 0; j < this.mineField.numCols(); j++){
+            if(this.mineField.hasMine(i, j)){
+               this.visibleField[i][j] = MINE_GUESS;
+            }
+         }
+      }
+   }
+
+   private boolean isWin(){
+      return this.numUncovered == this.mineField.numRows() * this.mineField.numCols() - this.mineField.numMines();
    }
 }
