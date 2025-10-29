@@ -242,26 +242,49 @@ public class VisibleField {
      *          (checked using mineField.inRange(r, c)).
      */
 
-    private void uncoverHelper(int r, int c) {
-        if (!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS) {
-            return;
+    // private void uncoverHelper(int r, int c) {
+    //     if (!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS) {
+    //         return;
+    //     }
+    //     if (this.mineField.hasMine(r, c)) { 
+    //         return;
+    //     }
+    //     this.numUncovered++;
+    //     int numNeighbors = this.mineField.numAdjacentMines(r, c);
+    //     this.visibleField[r][c] = numNeighbors;
+    //     if (numNeighbors == 0) {
+    //         for (int dr = -1; dr <= 1; dr++) {
+    //             for (int dc = -1; dc <= 1; dc++) {
+    //                 if (!(dr == 0 && dc == 0)) {
+    //                     uncoverHelper(r + dr, c + dc);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    private void uncoverHelper(int r, int c){
+        if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
+           return;
         }
         if (this.mineField.hasMine(r, c)) { 
-            return;
+            return; 
         }
+        
         this.numUncovered++;
         int numNeighbors = this.mineField.numAdjacentMines(r, c);
         this.visibleField[r][c] = numNeighbors;
-        if (numNeighbors == 0) {
-            for (int dr = -1; dr <= 1; dr++) {
-                for (int dc = -1; dc <= 1; dc++) {
-                    if (!(dr == 0 && dc == 0)) {
-                        uncoverHelper(r + dr, c + dc);
-                    }
-                }
-            }
+        
+        if(numNeighbors == 0){
+           for(int dr = -1; dr <= 1; dr++){
+              for(int dc = -1; dc <= 1; dc++){
+                 if(!(dr == 0 && dc == 0)){
+                    uncoverHelper(r + dr, c + dc);
+                 }
+              }
+           }
         }
-    }
+     }
 
     /**
      * Uncovers all squares in the minefield at the end of the game, either when the
@@ -277,18 +300,37 @@ public class VisibleField {
      * game) or wins the game
      * by uncovering all non-mine squares.
      */
-    private void uncoverAllLose() {
-        for (int i = 0; i < this.mineField.numRows(); i++) {
-            for (int j = 0; j < this.mineField.numCols(); j++) {
+    // private void uncoverAllLose() {
+    //     for (int i = 0; i < this.mineField.numRows(); i++) {
+    //         for (int j = 0; j < this.mineField.numCols(); j++) {
+    //             int visibleValue = this.visibleField[i][j];
+    //             if (visibleValue == EXPLODED_MINE) {
+    //                 continue;
+    //             }
+    //             boolean hasMine = this.mineField.hasMine(i, j);
+    //             if (visibleValue != MINE_GUESS && hasMine) {
+    //                 this.visibleField[i][j] = MINE;
+    //             } else if (visibleValue == MINE_GUESS && !hasMine) {
+    //                 this.visibleField[i][j] = INCORRECT_GUESS;
+    //             }
+    //         }
+    //     }
+    // }
+
+    private void uncoverAllLose(){
+        for(int i = 0; i < this.mineField.numRows(); i++){
+            for(int j = 0; j < this.mineField.numCols(); j++){
                 int visibleValue = this.visibleField[i][j];
+                
                 if (visibleValue == EXPLODED_MINE) {
                     continue;
                 }
+                
                 boolean hasMine = this.mineField.hasMine(i, j);
-                if (visibleValue != MINE_GUESS && hasMine) {
-                    this.visibleField[i][j] = MINE;
-                } else if (visibleValue == MINE_GUESS && !hasMine) {
-                    this.visibleField[i][j] = INCORRECT_GUESS;
+                if(visibleValue != MINE_GUESS && hasMine){
+                   this.visibleField[i][j] = MINE;
+                }else if(visibleValue == MINE_GUESS && !hasMine){
+                   this.visibleField[i][j] = INCORRECT_GUESS;
                 }
             }
         }
