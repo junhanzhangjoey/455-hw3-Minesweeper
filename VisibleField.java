@@ -267,9 +267,9 @@ public class VisibleField {
       for(int i = 0; i < this.mineField.numRows(); i++){
          for(int j = 0; j < this.mineField.numCols(); j++){
             int visibleValue = this.visibleField[i][j];
-            if(visibleValue == EXPLODED_MINE){
-               return;
-            }
+            // if(visibleValue == EXPLODED_MINE){
+            //    continue;
+            // }
             boolean hasMine = this.mineField.hasMine(i, j);
             if(visibleValue != MINE_GUESS && hasMine){
                this.visibleField[i][j] = MINE;
