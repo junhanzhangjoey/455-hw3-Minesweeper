@@ -264,9 +264,12 @@ public class VisibleField {
     // }
 
     private void uncoverHelper(int r, int c){
+        // 1. 守卫条件：排除边界、已翻开、猜雷
         if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
            return;
         }
+        
+        // 2. 关键修正：确保递归过程中不会意外地翻开雷（虽然主逻辑已排除，但这里是防守性编程）
         if (this.mineField.hasMine(r, c)) { 
             return; 
         }
@@ -322,13 +325,17 @@ public class VisibleField {
             for(int j = 0; j < this.mineField.numCols(); j++){
                 int visibleValue = this.visibleField[i][j];
                 
+                // 关键修正：爆炸雷必须保持 EXPLODED_MINE 状态 (11)
                 if (visibleValue == EXPLODED_MINE) {
                     continue;
                 }
                 
                 boolean hasMine = this.mineField.hasMine(i, j);
+                
+                // 如果不是 MINE_GUESS 且是雷 (COVERED 或 QUESTION)，则设置为 MINE
                 if(visibleValue != MINE_GUESS && hasMine){
                    this.visibleField[i][j] = MINE;
+                // 如果是 MINE_GUESS 且不是雷，则设置为 INCORRECT_GUESS
                 }else if(visibleValue == MINE_GUESS && !hasMine){
                    this.visibleField[i][j] = INCORRECT_GUESS;
                 }
