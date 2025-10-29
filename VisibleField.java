@@ -209,39 +209,13 @@ public class VisibleField {
     * PRE: The square at (r, c) is within the bounds of the minefield (checked using mineField.inRange(r, c)).
     */
 
-   // private void uncoverHelper(int r, int c){
-   //    if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
-   //       return;
-   //    }
-   //    this.numUncovered++;
-   //    int numNeighbors = this.mineField.numAdjacentMines(r, c);
-   //    this.visibleField[r][c] = numNeighbors;
-   //    if(numNeighbors == 0){
-   //       for(int dr = -1; dr <= 1; dr++){
-   //          for(int dc = -1; dc <= 1; dc++){
-   //             if(!(dr == 0 && dc == 0)){
-   //                uncoverHelper(r + dr, c + dc);
-   //             }
-   //          }
-   //       }
-   //    }
-   // }
-   
    private void uncoverHelper(int r, int c){
-      // 1. 守卫条件：排除边界、已翻开、猜雷
       if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
          return;
       }
-      
-      // 2. 关键修正：确保递归过程中不会意外地翻开雷（虽然主逻辑已排除，但这里是防守性编程）
-      if (this.mineField.hasMine(r, c)) { 
-          return; 
-      }
-      
       this.numUncovered++;
       int numNeighbors = this.mineField.numAdjacentMines(r, c);
       this.visibleField[r][c] = numNeighbors;
-      
       if(numNeighbors == 0){
          for(int dr = -1; dr <= 1; dr++){
             for(int dc = -1; dc <= 1; dc++){
@@ -252,6 +226,32 @@ public class VisibleField {
          }
       }
    }
+   
+   // private void uncoverHelper(int r, int c){
+   //    // 1. 守卫条件：排除边界、已翻开、猜雷
+   //    if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
+   //       return;
+   //    }
+      
+   //    // 2. 关键修正：确保递归过程中不会意外地翻开雷（虽然主逻辑已排除，但这里是防守性编程）
+   //    if (this.mineField.hasMine(r, c)) { 
+   //        return; 
+   //    }
+      
+   //    this.numUncovered++;
+   //    int numNeighbors = this.mineField.numAdjacentMines(r, c);
+   //    this.visibleField[r][c] = numNeighbors;
+      
+   //    if(numNeighbors == 0){
+   //       for(int dr = -1; dr <= 1; dr++){
+   //          for(int dc = -1; dc <= 1; dc++){
+   //             if(!(dr == 0 && dc == 0)){
+   //                uncoverHelper(r + dr, c + dc);
+   //             }
+   //          }
+   //       }
+   //    }
+   // }
 
    /**
     * Uncovers all squares in the minefield at the end of the game, either when the player wins or loses.
@@ -263,42 +263,45 @@ public class VisibleField {
     * This method is called when the player either uncovers a mine (losing the game) or wins the game
     * by uncovering all non-mine squares.
     */
-   // private void uncoverAllLose(){
-   //    for(int i = 0; i < this.mineField.numRows(); i++){
-   //       for(int j = 0; j < this.mineField.numCols(); j++){
-   //          int visibleValue = this.visibleField[i][j];
-   //          boolean hasMine = this.mineField.hasMine(i, j);
-   //          if(visibleValue != MINE_GUESS && hasMine){
-   //             this.visibleField[i][j] = MINE;
-   //          }else if(visibleValue == MINE_GUESS && !hasMine){
-   //             this.visibleField[i][j] = INCORRECT_GUESS;
-   //          }
-   //       }
-   //    }
-   // }
-
    private void uncoverAllLose(){
       for(int i = 0; i < this.mineField.numRows(); i++){
-          for(int j = 0; j < this.mineField.numCols(); j++){
-              int visibleValue = this.visibleField[i][j];
-              
-              // 关键修正：爆炸雷必须保持 EXPLODED_MINE 状态 (11)
-              if (visibleValue == EXPLODED_MINE) {
-                  continue;
-              }
-              
-              boolean hasMine = this.mineField.hasMine(i, j);
-              
-              // 如果不是 MINE_GUESS 且是雷 (COVERED 或 QUESTION)，则设置为 MINE
-              if(visibleValue != MINE_GUESS && hasMine){
-                 this.visibleField[i][j] = MINE;
-              // 如果是 MINE_GUESS 且不是雷，则设置为 INCORRECT_GUESS
-              }else if(visibleValue == MINE_GUESS && !hasMine){
-                 this.visibleField[i][j] = INCORRECT_GUESS;
-              }
-          }
+         for(int j = 0; j < this.mineField.numCols(); j++){
+            int visibleValue = this.visibleField[i][j];
+            if(visibleValue == EXPLODED_MINE){
+               return;
+            }
+            boolean hasMine = this.mineField.hasMine(i, j);
+            if(visibleValue != MINE_GUESS && hasMine){
+               this.visibleField[i][j] = MINE;
+            }else if(visibleValue == MINE_GUESS && !hasMine){
+               this.visibleField[i][j] = INCORRECT_GUESS;
+            }
+         }
       }
-  }
+   }
+
+//    private void uncoverAllLose(){
+//       for(int i = 0; i < this.mineField.numRows(); i++){
+//           for(int j = 0; j < this.mineField.numCols(); j++){
+//               int visibleValue = this.visibleField[i][j];
+              
+//               // 关键修正：爆炸雷必须保持 EXPLODED_MINE 状态 (11)
+//               if (visibleValue == EXPLODED_MINE) {
+//                   continue;
+//               }
+              
+//               boolean hasMine = this.mineField.hasMine(i, j);
+              
+//               // 如果不是 MINE_GUESS 且是雷 (COVERED 或 QUESTION)，则设置为 MINE
+//               if(visibleValue != MINE_GUESS && hasMine){
+//                  this.visibleField[i][j] = MINE;
+//               // 如果是 MINE_GUESS 且不是雷，则设置为 INCORRECT_GUESS
+//               }else if(visibleValue == MINE_GUESS && !hasMine){
+//                  this.visibleField[i][j] = INCORRECT_GUESS;
+//               }
+//           }
+//       }
+//   }
 
    private void uncoverAllWin(){
       for(int i = 0; i < this.mineField.numRows(); i++){
