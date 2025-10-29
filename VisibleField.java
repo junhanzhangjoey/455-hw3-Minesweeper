@@ -4,317 +4,330 @@
 // Spring 2025
 
 import java.util.Arrays;
+
 /**
-  VisibleField class
-  This is the data that's being displayed at any one point in the game (i.e., visible field, because
-  it's what the user can see about the minefield). Client can call getStatus(row, col) for any 
-  square.  It actually has data about the whole current state of the game, including the underlying
-  mine field (getMineField()).  Other accessors related to game status: numMinesLeft(), 
-  isGameOver().  It also has mutators related to actions the player could do (resetGameDisplay(),
-  cycleGuess(), uncover()), and changes the game state accordingly.
-  
-  It, along with the MineField (accessible in mineField instance variable), forms the Model for the
-  game application, whereas GameBoardPanel is the View and Controller in the MVC design pattern.  It
-  contains the MineField that it's partially displaying.  That MineField can be accessed
-  (or modified) from outside this class via the getMineField accessor.  
+ * VisibleField class
+ * This is the data that's being displayed at any one point in the game (i.e.,
+ * visible field, because
+ * it's what the user can see about the minefield). Client can call
+ * getStatus(row, col) for any
+ * square. It actually has data about the whole current state of the game,
+ * including the underlying
+ * mine field (getMineField()). Other accessors related to game status:
+ * numMinesLeft(),
+ * isGameOver(). It also has mutators related to actions the player could do
+ * (resetGameDisplay(),
+ * cycleGuess(), uncover()), and changes the game state accordingly.
+ * 
+ * It, along with the MineField (accessible in mineField instance variable),
+ * forms the Model for the
+ * game application, whereas GameBoardPanel is the View and Controller in the
+ * MVC design pattern. It
+ * contains the MineField that it's partially displaying. That MineField can be
+ * accessed
+ * (or modified) from outside this class via the getMineField accessor.
  */
 public class VisibleField {
-   // ----------------------------------------------------------   
-   // The following public constants (plus values [0,8] mentioned in comments below) are the
-   // possible states of one location (a "square") in the visible field (all are values that can be
-   // returned by public method getStatus(row, col)).
-   
-   // The following are the covered states (all negative values):
-   public static final int COVERED = -1;   // initial value of all squares
-   public static final int MINE_GUESS = -2;
-   public static final int QUESTION = -3;
+    // ----------------------------------------------------------
+    // The following public constants (plus values [0,8] mentioned in comments
+    // below) are the
+    // possible states of one location (a "square") in the visible field (all are
+    // values that can be
+    // returned by public method getStatus(row, col)).
 
-   // The following are the uncovered states (all non-negative values):
-   
-   // values in the range [0,8] corresponds to number of mines adjacent to this opened square
-   
-   public static final int MINE = 9;      // this loc is a mine that hasn't been guessed already
-                                          // (end of losing game)
-   public static final int INCORRECT_GUESS = 10;  // is displayed a specific way at the end of
+    // The following are the covered states (all negative values):
+    public static final int COVERED = -1; // initial value of all squares
+    public static final int MINE_GUESS = -2;
+    public static final int QUESTION = -3;
+
+    // The following are the uncovered states (all non-negative values):
+
+    // values in the range [0,8] corresponds to number of mines adjacent to this
+    // opened square
+
+    public static final int MINE = 9; // this loc is a mine that hasn't been guessed already
+                                      // (end of losing game)
+    public static final int INCORRECT_GUESS = 10; // is displayed a specific way at the end of
                                                   // losing game
-   public static final int EXPLODED_MINE = 11;   // the one you uncovered by mistake (that caused
-                                                 // you to lose)
-   // ----------------------------------------------------------   
-  
-   // <put instance variables here>
-   private int visibleField[][];
-   private MineField mineField;
-   private int numGuesses;
-   private int numUncovered;
-   private boolean gameOver;
-   private boolean firstMove;
+    public static final int EXPLODED_MINE = 11; // the one you uncovered by mistake (that caused
+                                                // you to lose)
+    // ----------------------------------------------------------
 
+    // <put instance variables here>
+    private int visibleField[][];
+    private MineField mineField;
+    private int numGuesses;
+    private int numUncovered;
+    private boolean gameOver;
+    private boolean firstMove;
 
-   /**
-      Create a visible field that has the given underlying mineField.
-      The initial state will have all the locations covered, no mines guessed, and the game not
-      over.
-      @param mineField  the minefield to use for for this VisibleField
-    */
-   public VisibleField(MineField mineField) {
-      this.visibleField = new int[mineField.numRows()][mineField.numCols()];
-      for(int i = 0; i < mineField.numRows(); i++){
-         Arrays.fill(this.visibleField[i], COVERED);
-      }
-      this.mineField = mineField;
-      this.numGuesses = 0;
-      this.numUncovered = 0;
-      this.gameOver = false;
-      this.firstMove = true;
-   }
-   
-   
-   /**
-      Reset the object to its initial state (see constructor comments), using the same underlying
-      MineField. 
-   */     
-   public void resetGameDisplay() {
-      for(int i = 0; i < this.visibleField.length; i++){
-         Arrays.fill(this.visibleField[i], COVERED);
-      }
-      this.numGuesses = 0;
-      this.numUncovered = 0;
-      gameOver = false;
-      firstMove = true;
-   }
-  
-   
-   /**
-      Returns a reference to the mineField that this VisibleField "covers"
-      @return the minefield
-    */
-   public MineField getMineField() {
-      return this.mineField;
-   }
-   /**
-      Returns the visible status of the square indicated.
-      @param row  row of the square
-      @param col  col of the square
-      @return the status of the square at location (row, col).  See the public constants at the
-            beginning of the class for the possible values that may be returned, and their meanings.
-      PRE: getMineField().inRange(row, col)
-    */
-   public int getStatus(int row, int col) {
-      return this.visibleField[row][col];
-   }
+    /**
+     * Create a visible field that has the given underlying mineField.
+     * The initial state will have all the locations covered, no mines guessed, and
+     * the game not
+     * over.
+     * 
+     * @param mineField the minefield to use for for this VisibleField
+     */
+    public VisibleField(MineField mineField) {
+        this.visibleField = new int[mineField.numRows()][mineField.numCols()];
+        for (int i = 0; i < mineField.numRows(); i++) {
+            Arrays.fill(this.visibleField[i], COVERED);
+        }
+        this.mineField = mineField;
+        this.numGuesses = 0;
+        this.numUncovered = 0;
+        this.gameOver = false;
+        this.firstMove = true;
+    }
 
-   
-   /**
-      Returns the the number of mines left to guess.  This has nothing to do with whether the mines
-      guessed are correct or not.  Just gives the user an indication of how many more mines the user
-      might want to guess.  This value will be negative if they have guessed more than the number of
-      mines in the minefield.     
-      @return the number of mines left to guess.
-    */
-   public int numMinesLeft() {
-      return this.mineField.numMines() - this.numGuesses;
-   }
- 
-   
-   /**
-      Cycles through covered states for a square, updating number of guesses as necessary.  Call on
-      a COVERED square changes its status to MINE_GUESS; call on a MINE_GUESS square changes it to
-      QUESTION;  call on a QUESTION square changes it to COVERED again; call on an uncovered square
-      has no effect.  
-      @param row  row of the square
-      @param col  col of the square
-      PRE: getMineField().inRange(row, col)
-    */
-   public void cycleGuess(int row, int col) {
-      if (this.isGameOver() || this.isUncovered(row, col)) { 
-         return; 
-      }
-      int fieldValue = this.visibleField[row][col];
-      if(fieldValue == COVERED){
-         this.visibleField[row][col] = MINE_GUESS;
-         this.numGuesses++;
-      }else if(fieldValue == MINE_GUESS){
-         this.visibleField[row][col] = QUESTION;
-         this.numGuesses--;
-      }else if (fieldValue == QUESTION){
-         this.visibleField[row][col] = COVERED;
-      }
-   }
+    /**
+     * Reset the object to its initial state (see constructor comments), using the
+     * same underlying
+     * MineField.
+     */
+    public void resetGameDisplay() {
+        for (int i = 0; i < this.visibleField.length; i++) {
+            Arrays.fill(this.visibleField[i], COVERED);
+        }
+        this.numGuesses = 0;
+        this.numUncovered = 0;
+        gameOver = false;
+        firstMove = true;
+    }
 
-   
-   /**
-      Uncovers this square and returns false iff you uncover a mine here.
-      If the square wasn't a mine or adjacent to a mine it also uncovers all the squares in the
-      neighboring area that are also not next to any mines, possibly uncovering a large region.
-      Any mine-adjacent squares you reach will also be uncovered, and form (possibly along with
-      parts of the edge of the whole field) the boundary of this region.
-      Does not uncover, or keep searching through, squares that have the status MINE_GUESS. 
-      Note: this action may cause the game to end: either in a win (opened all the non-mine squares)
-      or a loss (opened a mine).
-      @param row  of the square
-      @param col  of the square
-      @return false   iff you uncover a mine at (row, col)
-      PRE: getMineField().inRange(row, col)
-    */
-   public boolean uncover(int row, int col) {
-      if(this.firstMove){
-         this.mineField.populateMineField(row, col);
-         this.firstMove = false;
-      }else if(this.mineField.hasMine(row, col)){
-         this.gameOver = true;
-         this.visibleField[row][col] = EXPLODED_MINE;
-         uncoverAllLose();
-         return false;
-      }
-      uncoverHelper(row, col);
-      if(this.isWin()){
-         gameOver = true;
-         uncoverAllWin();
-      }
-      return true;
-   }
+    /**
+     * Returns a reference to the mineField that this VisibleField "covers"
+     * 
+     * @return the minefield
+     */
+    public MineField getMineField() {
+        return this.mineField;
+    }
 
-   /**
-      Returns whether the game is over.
-      (Note: This is not a mutator.)
-      @return whether game has ended
-    */
-   public boolean isGameOver() {
-      return this.gameOver;
-   }
-   
-   
-   /**
-      Returns whether this square has been uncovered.  (i.e., is in any one of the uncovered states, 
-      vs. any one of the covered states).
-      @param row of the square
-      @param col of the square
-      @return whether the square is uncovered
-      PRE: getMineField().inRange(row, col)
-    */
-   public boolean isUncovered(int row, int col) {
-      return this.visibleField[row][col] >= 0;
-   }
-   
- 
-   // <put private methods here>
-   /**
-    * Recursively uncovers the square at (r, c) and all neighboring squares that are not adjacent to mines.
-    * If the square at (r, c) has no adjacent mines, the function will continue uncovering neighboring squares
-    * recursively. This is typically used for uncovering large areas of empty squares in the game.
-    *
-    * @param r  The row index of the square to uncover.
-    * @param c  The column index of the square to uncover.
-    * 
-    * PRE: The square at (r, c) is within the bounds of the minefield (checked using mineField.inRange(r, c)).
-    */
+    /**
+     * Returns the visible status of the square indicated.
+     * 
+     * @param row row of the square
+     * @param col col of the square
+     * @return the status of the square at location (row, col). See the public
+     *         constants at the
+     *         beginning of the class for the possible values that may be returned,
+     *         and their meanings.
+     *         PRE: getMineField().inRange(row, col)
+     */
+    public int getStatus(int row, int col) {
+        return this.visibleField[row][col];
+    }
 
-   private void uncoverHelper(int r, int c){
-      if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
-         return;
-      }
-      this.numUncovered++;
-      int numNeighbors = this.mineField.numAdjacentMines(r, c);
-      this.visibleField[r][c] = numNeighbors;
-      if(numNeighbors == 0){
-         for(int dr = -1; dr <= 1; dr++){
-            for(int dc = -1; dc <= 1; dc++){
-               if(!(dr == 0 && dc == 0)){
-                  uncoverHelper(r + dr, c + dc);
-               }
+    /**
+     * Returns the the number of mines left to guess. This has nothing to do with
+     * whether the mines
+     * guessed are correct or not. Just gives the user an indication of how many
+     * more mines the user
+     * might want to guess. This value will be negative if they have guessed more
+     * than the number of
+     * mines in the minefield.
+     * 
+     * @return the number of mines left to guess.
+     */
+    public int numMinesLeft() {
+        return this.mineField.numMines() - this.numGuesses;
+    }
+
+    /**
+     * Cycles through covered states for a square, updating number of guesses as
+     * necessary. Call on
+     * a COVERED square changes its status to MINE_GUESS; call on a MINE_GUESS
+     * square changes it to
+     * QUESTION; call on a QUESTION square changes it to COVERED again; call on an
+     * uncovered square
+     * has no effect.
+     * 
+     * @param row row of the square
+     * @param col col of the square
+     *            PRE: getMineField().inRange(row, col)
+     */
+    public void cycleGuess(int row, int col) {
+        if (this.isGameOver() || this.isUncovered(row, col)) {
+            return;
+        }
+        int fieldValue = this.visibleField[row][col];
+        if (fieldValue == COVERED) {
+            this.visibleField[row][col] = MINE_GUESS;
+            this.numGuesses++;
+        } else if (fieldValue == MINE_GUESS) {
+            this.visibleField[row][col] = QUESTION;
+            this.numGuesses--;
+        } else if (fieldValue == QUESTION) {
+            this.visibleField[row][col] = COVERED;
+        }
+    }
+
+    /**
+     * Uncovers this square and returns false iff you uncover a mine here.
+     * If the square wasn't a mine or adjacent to a mine it also uncovers all the
+     * squares in the
+     * neighboring area that are also not next to any mines, possibly uncovering a
+     * large region.
+     * Any mine-adjacent squares you reach will also be uncovered, and form
+     * (possibly along with
+     * parts of the edge of the whole field) the boundary of this region.
+     * Does not uncover, or keep searching through, squares that have the status
+     * MINE_GUESS.
+     * Note: this action may cause the game to end: either in a win (opened all the
+     * non-mine squares)
+     * or a loss (opened a mine).
+     * 
+     * @param row of the square
+     * @param col of the square
+     * @return false iff you uncover a mine at (row, col)
+     *         PRE: getMineField().inRange(row, col)
+     */
+    public boolean uncover(int row, int col) {
+        if (this.firstMove) {
+            this.mineField.populateMineField(row, col);
+            this.firstMove = false;
+        } else if (this.mineField.hasMine(row, col)) {
+            this.gameOver = true;
+            this.visibleField[row][col] = EXPLODED_MINE;
+            uncoverAllLose();
+            return false;
+        }
+        uncoverHelper(row, col);
+        if (this.isWin()) {
+            gameOver = true;
+            uncoverAllWin();
+        }
+        return true;
+    }
+
+    /**
+     * Returns whether the game is over.
+     * (Note: This is not a mutator.)
+     * 
+     * @return whether game has ended
+     */
+    public boolean isGameOver() {
+        return this.gameOver;
+    }
+
+    /**
+     * Returns whether this square has been uncovered. (i.e., is in any one of the
+     * uncovered states,
+     * vs. any one of the covered states).
+     * 
+     * @param row of the square
+     * @param col of the square
+     * @return whether the square is uncovered
+     *         PRE: getMineField().inRange(row, col)
+     */
+    public boolean isUncovered(int row, int col) {
+        return this.visibleField[row][col] >= 0;//
+    }
+
+    // <put private methods here>
+    /**
+     * Recursively uncovers the square at (r, c) and all neighboring squares that
+     * are not adjacent to mines.
+     * If the square at (r, c) has no adjacent mines, the function will continue
+     * uncovering neighboring squares
+     * recursively. This is typically used for uncovering large areas of empty
+     * squares in the game.
+     *
+     * @param r The row index of the square to uncover.
+     * @param c The column index of the square to uncover.
+     * 
+     *          PRE: The square at (r, c) is within the bounds of the minefield
+     *          (checked using mineField.inRange(r, c)).
+     */
+
+    private void uncoverHelper(int r, int c) {
+        if (!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS) {
+            return;
+        }
+        this.numUncovered++;
+        int numNeighbors = this.mineField.numAdjacentMines(r, c);
+        this.visibleField[r][c] = numNeighbors;
+        if (numNeighbors == 0) {
+            for (int dr = -1; dr <= 1; dr++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (!(dr == 0 && dc == 0)) {
+                        uncoverHelper(r + dr, c + dc);
+                    }
+                }
             }
-         }
-      }
-   }
-   
-   // private void uncoverHelper(int r, int c){
-   //    // 1. 守卫条件：排除边界、已翻开、猜雷
-   //    if(!this.mineField.inRange(r, c) || this.isUncovered(r, c) || this.visibleField[r][c] == MINE_GUESS){
-   //       return;
-   //    }
-      
-   //    // 2. 关键修正：确保递归过程中不会意外地翻开雷（虽然主逻辑已排除，但这里是防守性编程）
-   //    if (this.mineField.hasMine(r, c)) { 
-   //        return; 
-   //    }
-      
-   //    this.numUncovered++;
-   //    int numNeighbors = this.mineField.numAdjacentMines(r, c);
-   //    this.visibleField[r][c] = numNeighbors;
-      
-   //    if(numNeighbors == 0){
-   //       for(int dr = -1; dr <= 1; dr++){
-   //          for(int dc = -1; dc <= 1; dc++){
-   //             if(!(dr == 0 && dc == 0)){
-   //                uncoverHelper(r + dr, c + dc);
-   //             }
-   //          }
-   //       }
-   //    }
-   // }
+        }
+    }
 
-   /**
-    * Uncovers all squares in the minefield at the end of the game, either when the player wins or loses.
-    * This method reveals all mines, guesses, and incorrect guesses, updating the visible field accordingly.
-    * 
-    * - If a square is a mine, it is revealed as MINE.
-    * - If a square was guessed as a mine but isn't, it is marked as INCORRECT_GUESS.
-    * 
-    * This method is called when the player either uncovers a mine (losing the game) or wins the game
-    * by uncovering all non-mine squares.
-    */
-   private void uncoverAllLose(){
-      for(int i = 0; i < this.mineField.numRows(); i++){
-         for(int j = 0; j < this.mineField.numCols(); j++){
-            int visibleValue = this.visibleField[i][j];
-            // if(visibleValue == EXPLODED_MINE){
-            //    continue;
-            // }
-            boolean hasMine = this.mineField.hasMine(i, j);
-            if(visibleValue != MINE_GUESS && hasMine){
-               this.visibleField[i][j] = MINE;
-            }else if(visibleValue == MINE_GUESS && !hasMine){
-               this.visibleField[i][j] = INCORRECT_GUESS;
+    /**
+     * Uncovers all squares in the minefield at the end of the game, either when the
+     * player wins or loses.
+     * This method reveals all mines, guesses, and incorrect guesses, updating the
+     * visible field accordingly.
+     * 
+     * - If a square is a mine, it is revealed as MINE.
+     * - If a square was guessed as a mine but isn't, it is marked as
+     * INCORRECT_GUESS.
+     * 
+     * This method is called when the player either uncovers a mine (losing the
+     * game) or wins the game
+     * by uncovering all non-mine squares.
+     */
+    private void uncoverAllLose() {
+        for (int i = 0; i < this.mineField.numRows(); i++) {
+            for (int j = 0; j < this.mineField.numCols(); j++) {
+                int visibleValue = this.visibleField[i][j];
+                if (visibleValue == EXPLODED_MINE) {
+                    continue;
+                }
+                boolean hasMine = this.mineField.hasMine(i, j);
+                if (visibleValue != MINE_GUESS && hasMine) {
+                    this.visibleField[i][j] = MINE;
+                } else if (visibleValue == MINE_GUESS && !hasMine) {
+                    this.visibleField[i][j] = INCORRECT_GUESS;
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
-//    private void uncoverAllLose(){
-//       for(int i = 0; i < this.mineField.numRows(); i++){
-//           for(int j = 0; j < this.mineField.numCols(); j++){
-//               int visibleValue = this.visibleField[i][j];
-              
-//               // 关键修正：爆炸雷必须保持 EXPLODED_MINE 状态 (11)
-//               if (visibleValue == EXPLODED_MINE) {
-//                   continue;
-//               }
-              
-//               boolean hasMine = this.mineField.hasMine(i, j);
-              
-//               // 如果不是 MINE_GUESS 且是雷 (COVERED 或 QUESTION)，则设置为 MINE
-//               if(visibleValue != MINE_GUESS && hasMine){
-//                  this.visibleField[i][j] = MINE;
-//               // 如果是 MINE_GUESS 且不是雷，则设置为 INCORRECT_GUESS
-//               }else if(visibleValue == MINE_GUESS && !hasMine){
-//                  this.visibleField[i][j] = INCORRECT_GUESS;
-//               }
-//           }
-//       }
-//   }
-
-   private void uncoverAllWin(){
-      for(int i = 0; i < this.mineField.numRows(); i++){
-         for(int j = 0; j < this.mineField.numCols(); j++){
-            if(this.mineField.hasMine(i, j)){
-               this.visibleField[i][j] = MINE_GUESS;
+    /**
+     * Updates the visible field to the final display state upon winning the game.
+     * * This method iterates through the entire minefield and sets the status of
+     * every square that contains a mine to MINE_GUESS. This action is necessary
+     * to visually indicate the location of all remaining mines to the player after
+     * a win.
+     * * Squares that were already marked MINE_GUESS by the player will remain
+     * MINE_GUESS,
+     * and squares that were COVERED or QUESTION and contained a mine will be
+     * converted
+     * to MINE_GUESS. Uncovered (non-mine) squares are not affected.
+     * * PRE: isGameOver() is true due to a win condition.
+     */
+    private void uncoverAllWin() {
+        for (int i = 0; i < this.mineField.numRows(); i++) {
+            for (int j = 0; j < this.mineField.numCols(); j++) {
+                if (this.mineField.hasMine(i, j)) {
+                    this.visibleField[i][j] = MINE_GUESS;
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
-   private boolean isWin(){
-      return this.numUncovered == this.mineField.numRows() * this.mineField.numCols() - this.mineField.numMines();
-   }
+    /**
+     * Checks if the game has been won by determining if all non-mine squares have
+     * been uncovered.
+     * * The win condition is met when the total count of successfully uncovered
+     * non-mine squares
+     * (`numUncovered`) equals the total number of non-mine squares in the entire
+     * field.
+     * * @return true if the number of uncovered non-mine squares equals the total
+     * non-mine squares;
+     * otherwise, returns false.
+     * * Note: This method is a pure accessor and does not change the game state
+     * (gameOver).
+     */
+    private boolean isWin() {
+        return this.numUncovered == this.mineField.numRows() * this.mineField.numCols() - this.mineField.numMines();
+    }
 }
-
